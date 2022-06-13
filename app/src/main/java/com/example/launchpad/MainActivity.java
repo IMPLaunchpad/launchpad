@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -39,6 +40,26 @@ public class MainActivity extends AppCompatActivity {
     };
 
     Integer[][] soundIds = new Integer[4][4];
+
+    Map<Integer, Integer> keyMap = new HashMap<Integer, Integer>() {{
+        put(111, 0);
+        put(8, 1);
+        put(9, 2);
+        put(10, 3);
+        put(11, 4);
+        put(12, 5);
+        put(13, 6);
+        put(14, 7);
+        put(15, 8);
+        put(16, 9);
+        put(7, 10);
+        put(69, 11);
+        put(70, 12);
+        put(67, 13);
+        put(61, 14);
+        put(45, 15);
+    }};
+
 
 
     @Override
@@ -73,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
                 int audioId = audioIdList[i][j];
 
                 buttonList[i][j] = findViewById(buttonId);
+                buttonList[i][j].setBackgroundColor(getResources().getColor(R.color.Gray));
+
                 soundPoolList[i][j] = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
 
                 soundPoolList[i][j].setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
@@ -81,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                         int i = count / 4;
                         int j = count % 4;
 
-                        buttonList[i][j].setBackground(AppCompatResources.getDrawable(MainActivity.this, R.drawable.shape));
+                        //buttonList[i][j].setBackground(AppCompatResources.getDrawable(MainActivity.this, R.drawable.shape));
                         count++;
                     }
                 });
@@ -95,32 +118,78 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Button.OnClickListener onClickListener = new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int id = viewIdIndexMap.get(v.getId());
+//        Button.OnClickListener onClickListener = new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int id = viewIdIndexMap.get(v.getId());
+//
+//                int i = id / 4;
+//                int j = id % 4;
+//////                try {
+//////                    mediaPlayers[i][j].prepare();
+//////                } catch (IOException e) {
+//////                    e.printStackTrace();
+//////                }
+//////                mediaPlayers[i][j].start();
+////                System.out.println("id = " + id);
+////                System.out.println("i = " + i);
+////                System.out.println("j = " + j);
+//                //mediaPlayers[i][j].start();
+//                soundPoolList[i][j].play(soundIds[i][j], 1f, 1f, 0,0, 1f);
+//            }
+//        };
+//
+//        for (int i = 0; i < 4; i++) {
+//            for (int j = 0; j < 4; j++) {
+//                buttonList[i][j].setOnClickListener(onClickListener);
+//            }
+//        }
+    }
 
-                int i = id / 4;
-                int j = id % 4;
-////                try {
-////                    mediaPlayers[i][j].prepare();
-////                } catch (IOException e) {
-////                    e.printStackTrace();
-////                }
-////                mediaPlayers[i][j].start();
-//                System.out.println("id = " + id);
-//                System.out.println("i = " + i);
-//                System.out.println("j = " + j);
-                //mediaPlayers[i][j].start();
-                soundPoolList[i][j].play(soundIds[i][j], 1f, 1f, 0,0, 1f);
-            }
-        };
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                buttonList[i][j].setOnClickListener(onClickListener);
-            }
+        //if ((keyCode >= 7) && (keyCode <= 22)) {
+            //int key = keyCode - 7;
+
+            //int i = key / 4;
+            //int j = key % 4;
+
+            //soundPoolList[i][j].play(soundIds[i][j], 1f, 1f, 0,0, 1f);
+
+        if(keyCode != 0){
+            Integer key = keyMap.get(keyCode);
+
+            if (key == null) return false;
+
+            int i = key / 4;
+            int j = key % 4;
+
+            buttonList[i][j].setBackgroundColor(getResources().getColor(R.color.purple_500));
+
+            soundPoolList[i][j].play(soundIds[i][j], 1f, 1f, 0,0, 1f);
+
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+
+        if(keyCode != 0){
+            Integer key = keyMap.get(keyCode);
+
+            if (key == null) return false;
+
+            int i = key / 4;
+            int j = key % 4;
+
+            buttonList[i][j].setBackgroundColor(getResources().getColor(R.color.Gray));
+
+            return true;
+        }
+        return false;
     }
 
     @Override
