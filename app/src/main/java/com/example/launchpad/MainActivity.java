@@ -23,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
     Button[][] buttonList = new Button[4][4];
 
-//    SoundPool[][] soundPoolList = new SoundPool[4][4];
+    SoundPool[][] soundPoolList = new SoundPool[4][4];
 
-    MediaPlayer[][] mediaPlayers = new MediaPlayer[4][4];
+//    MediaPlayer[][] mediaPlayers = new MediaPlayer[4][4];
 
     Integer[][] viewIdList = new Integer[4][4];
 
@@ -66,15 +66,34 @@ public class MainActivity extends AppCompatActivity {
         viewIdList[3][2] = R.id.button32;
         viewIdList[3][3] = R.id.button33;
 
+
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                buttonList[i][j] = findViewById(viewIdList[i][j]);
-                mediaPlayers[i][j] = MediaPlayer.create(MainActivity.this, audioIdList[i][j]);
+                int buttonId = viewIdList[i][j];
+                int audioId = audioIdList[i][j];
+
+                buttonList[i][j] = findViewById(buttonId);
+                soundPoolList[i][j] = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+
+                soundPoolList[i][j].setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                    @Override
+                    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                        int i = count / 4;
+                        int j = count % 4;
+
+                        buttonList[i][j].setBackground(AppCompatResources.getDrawable(MainActivity.this, R.drawable.shape));
+                        count++;
+                    }
+                });
+
+                soundIds[i][j] = soundPoolList[i][j].load(MainActivity.this, audioId, 0);
+                //mediaPlayers[i][j] = MediaPlayer.create(MainActivity.this, audioIdList[i][j]);
+
                 viewIdIndexMap.put(viewIdList[i][j], i * 4 + j);
 
-                buttonList[i][j].setBackground(AppCompatResources.getDrawable(MainActivity.this, R.drawable.shape));
             }
         }
+
 
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
             @Override
@@ -92,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
 //                System.out.println("id = " + id);
 //                System.out.println("i = " + i);
 //                System.out.println("j = " + j);
-                mediaPlayers[i][j].start();
+                //mediaPlayers[i][j].start();
+                soundPoolList[i][j].play(soundIds[i][j], 1f, 1f, 0,0, 1f);
             }
         };
 
@@ -109,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                mediaPlayers[i][j].release();
+                soundPoolList[i][j].release();
+                //mediaPlayers[i][j].release();
             }
         }
     }
